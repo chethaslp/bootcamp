@@ -1,19 +1,14 @@
 "use client"
-import { Button, Card, Col, Container, Form, InputGroup, ListGroup, Navbar, Row } from 'react-bootstrap';
+import { Button, Card, Col, InputGroup, ListGroup, Row } from 'react-bootstrap';
 import {PiChatsDuotone, PiFoldersDuotone} from 'react-icons/pi';
-import {ResourceItem, UserBar} from './util';
+import {Nav, ResourceItem} from '../../util';
 
 
 export default function Home() {
 
   return (
     <div className='flex bg flex-col h-screen w-screen'>
-      <Navbar expand="lg" bg="light" className='!justify-between border-b-4 p-2 shadow-lg' variant="light">
-        <Navbar.Brand className='ml-5'>
-            <b>Bootcamp.</b>
-        </Navbar.Brand> 
-        <UserBar/>
-      </Navbar>
+      <Nav/>
       <div  className='flex p-3 h-full flex-col'>
           <Row className='h-1/2'>
             <Col>
@@ -62,6 +57,5 @@ export default function Home() {
         
         </div>
       </div>
-
   );
 }
