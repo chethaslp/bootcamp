@@ -7,8 +7,8 @@ const f = Comfortaa({ subsets: ['latin'] })
 
 export default function Loading() {
     return (
-        <div className={`${f.className} flex text-white text-4xl justify-center items-center h-screen w-screen   z-50`} >
-            <b>Bootcamp.</b>
+        <div className={`${f.className} flex text-white text-4xl justify-center items-center h-screen w-screen animate-pulse transition-all  z-50`} >
+            <b>&lt;Bootcamp/&gt;</b>
         </div> 
     )
   }

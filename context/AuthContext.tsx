@@ -6,7 +6,6 @@ import {
 } from 'firebase/auth';
 import {auth} from '@/components/fb/auth';
 import Loading from '@/app/loading';
-import { motion } from 'framer-motion';
 
 export const AuthContext = React.createContext({});
 
@@ -33,16 +32,7 @@ export const AuthContextProvider = ({
 
     return (
         <AuthContext.Provider value={{ user }}>
-            <motion.div initial="pageInitial" animate="pageAnimate"  variants={{
-                pageInitial: {
-                opacity: 0
-                },
-                pageAnimate: {
-                opacity: 1
-                },
-            }}>
                 {loading ? <Loading/> : children}
-            </motion.div>
         </AuthContext.Provider>
     );
 };

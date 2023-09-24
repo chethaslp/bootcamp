@@ -6,6 +6,7 @@ const firebaseConfig = {
   authDomain: "bootcamp-clp.firebaseapp.com",
   projectId: "bootcamp-clp",
   storageBucket: "bootcamp-clp.appspot.com",
+  databaseURL: "https://bootcamp-clp-default-rtdb.asia-southeast1.firebasedatabase.app",
   messagingSenderId: "18731169781",
   appId: "1:18731169781:web:047d75c257c41505fc52bc"
 };

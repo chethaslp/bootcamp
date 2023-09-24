@@ -5,12 +5,11 @@ import { Montserrat } from 'next/font/google'
 import { Nav } from './util'
 import { AuthContextProvider } from '@/context/AuthContext'
 import Loading from './loading'
-import { Suspense } from 'react'
 
 const f = Montserrat({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Bootcamp.',
+  title: 'Bootcamp App',
   description: 'Bootstrap your bootcamp.',
 }
 

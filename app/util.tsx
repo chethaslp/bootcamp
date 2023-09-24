@@ -76,14 +76,19 @@ function UserBar(){
           Signin
         </div>)   
 }
+
+function Logo({className}){
+  return <b className={f.className+' '+className}> &lt;Bootcamp/&gt;</b>
+}
+
 function Nav(){
 return(
       <Navbar expand="lg" bg="light" className='!justify-between border-b-4 p-2 shadow-lg' variant="light">
-        <Navbar.Brand className={`${f.className} ml-5`}>
-            <b>Bootcamp.</b>
+        <Navbar.Brand className={`ml-5`}>
+          <Logo/>
         </Navbar.Brand> 
         <Suspense fallback={<Loading/>}><UserBar/></Suspense>
       </Navbar> )
 }
 
-export {ResourceItem, ChatItem, Nav};
+export {ResourceItem, ChatItem, Nav, Logo};
