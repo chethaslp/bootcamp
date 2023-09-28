@@ -2,9 +2,17 @@
 import { Button, Card, Col, InputGroup, ListGroup, Row } from 'react-bootstrap';
 import {PiChatsDuotone, PiFoldersDuotone} from 'react-icons/pi';
 import {Nav, ResourceItem} from '../../util';
+import { useEffect } from 'react';
+import { PeerConnection } from '@/components/rtc/peer';
 
 
 export default function Home() {
+
+  useEffect(()=>{
+    PeerConnection.startPeerSession().then((id)=>{
+      console.log("Peer session started: ",id)
+    })
+  },[])
 
   return (
     <div className='flex bg flex-col h-screen w-screen'>

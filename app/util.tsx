@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import Loading from "./loading";
 import { useAuthContext } from "@/context/AuthContext";
 import { signout } from "@/components/fb/auth";
+import { redirect, usePathname } from "next/navigation";
 
 const f = Comfortaa({ subsets: ['latin'] })
 
@@ -52,29 +53,29 @@ function ChatItem({msg, user}){
 
 function UserBar(){
   const { user } = useAuthContext()
-      if (user) 
-        return(
-      <Dropdown>
-        <Dropdown.Toggle className="!flex p-2 cursor-pointer border rounded-md !text-black !flex-row justify-center items-center bg-white hover:!bg-slate-300 transition-all">
-          <Image height={30} width={30} src={user.photoURL} className="rounded mr-2"/>
-              {user.displayName} 
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-          <Dropdown.Header>Account</Dropdown.Header>
-          <Dropdown.Item eventKey="1" onClick={signout}>Signout</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Header>Other</Dropdown.Header>
-          <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
-          <Dropdown.ItemText>Non-interactive text</Dropdown.ItemText>
-        </Dropdown.Menu>
-      </Dropdown>
-        );
-      return (
-        <div className="flex p-2 cursor-pointer border rounded-md flex-row justify-center items-center hover:bg-slate-300 transition-all"
-        onClick={()=> signin()}>
-          <FcGoogle size={20} className="mr-2"/>
-          Signin
-        </div>)   
+  if(!user) redirect("/signin?c="+usePathname())
+  return(
+    <Dropdown>
+      <Dropdown.Toggle className="!flex p-2 cursor-pointer border rounded-md !text-black !flex-row justify-center items-center bg-white hover:!bg-slate-300 transition-all">
+        <Image height={30} referrerPolicy="no-referrer" width={30} src={user.photoURL} className="rounded mr-2"/>
+            <span className="hidden md:block">{user.displayName} </span>
+      </Dropdown.Toggle>
+      <Dropdown.Menu>
+        <Dropdown.Header>Account</Dropdown.Header>
+        <Dropdown.Item eventKey="1" onClick={signout}>Signout</Dropdown.Item>
+        <Dropdown.Divider />
+        <Dropdown.Header>Other</Dropdown.Header>
+        <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
+        <Dropdown.ItemText>Non-interactive text</Dropdown.ItemText>
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+      // return (
+      //   <div className="flex p-2 cursor-pointer border rounded-md flex-row justify-center items-center hover:bg-slate-300 transition-all"
+      //   onClick={()=> (window.location.href="/signin") }>
+      //     <FcGoogle size={20} className="mr-2"/>
+      //     Signin
+      //   </div>)   
 }
 
 function Logo({className}){
@@ -87,7 +88,7 @@ return(
         <Navbar.Brand className={`ml-5`}>
           <Logo/>
         </Navbar.Brand> 
-        <Suspense fallback={<Loading/>}><UserBar/></Suspense>
+        <UserBar/>
       </Navbar> )
 }
 

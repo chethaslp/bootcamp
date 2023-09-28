@@ -4,9 +4,9 @@ import { Logo } from "../util";
 import { FcGoogle } from "react-icons/fc";
 import { ImSpinner2 } from 'react-icons/im'
 import { signin } from "@/components/fb/auth";
-import { useEffect, useState } from "react";
-import { redirect } from "next/navigation";
+import { useState } from "react";
 import { createUser } from "@/components/fb/db";
+import { useSearchParams } from "next/navigation";
 
 
 export default function page() {
@@ -14,6 +14,8 @@ export default function page() {
     const [form_valid, setValid] = useState(false);
     const [loading, setLoading] = useState(false);
     const [form_invalid, setInvalid] = useState(false);
+    const forwordURL = useSearchParams().get('c')
+
     return (
         <div className="flex gap-4 flex-col h-screen justify-center items-center">
             <Logo className="text-3xl text-white" />
@@ -44,7 +46,8 @@ export default function page() {
                                 setLoading(true)
                                 signin().then((result) => {
                                     createUser(result.user,dname);
-                                    window.location.href = "/host";
+                                    (forwordURL)?(window.location.href = forwordURL):(window.location.href = "/host")
+                                    
                                   }).catch((error) => {
                                     setLoading(false);
                                     setValid(false)
