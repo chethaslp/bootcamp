@@ -1,14 +1,13 @@
 "use client"
 import { Button, Card, Col, Dropdown, FloatingLabel, Form, InputGroup, ListGroup, Modal, Row } from 'react-bootstrap';
-import {HiUserGroup} from 'react-icons/hi2';
-import {MdGroupAdd, MdGroupOff} from 'react-icons/md'
-import {ImSpinner2} from 'react-icons/im'
-import {Nav} from '@/app/util';
+import { HiUserGroup } from 'react-icons/hi2';
+import { MdGroupAdd, MdGroupOff} from 'react-icons/md'
+import { ImSpinner2 } from 'react-icons/im'
+import { Nav } from '@/app/util';
 import { useEffect, useRef, useState } from 'react';
 import { createUserRoom, getUserRooms } from '@/components/fb/db';
 
 import { useAuthContext } from '@/context/AuthContext';
-import { redirect } from 'next/navigation';
 
 
 export default function Home() {
@@ -59,7 +58,7 @@ export default function Home() {
   },[]);
 
   return (
-    <div className='flex bg flex-col h-screen w-screen'>
+    <div className='flex flex-col'>
       <Modal centered show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title className='flex-row flex gap-2 items-center'><MdGroupAdd/> Create Room</Modal.Title>
@@ -112,31 +111,20 @@ export default function Home() {
       </Modal>
       
       <Nav/>
-      <div className='grid p-3 h-full md:grid-flow-col gap-3 grid-cols-1 md:grid-cols-2'>
-        <div className='!h-full'>
-          <Card className='!h-full'>
-            <Card.Header>Header</Card.Header>
-            <Card.Body className='!h-full'>
-              <Card.Text>
-                Some quick example text to build the card out and make up the bulk of
-                the card's content.
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
-        <div className='h-full'>
-          <Card className='shadow-md h-full '>
+      <div className=' p-3  gap-3 grid'>
+        <div className=''>
+          <Card className='shadow-md'>
             <Card.Header className='flex flex-row justify-center'><span className='flex flex-row justify-center items-center'><HiUserGroup className="mr-2"/>Rooms</span></Card.Header>
-            <Card.Body className='flex justify-center items-center overflow-y-scroll'>
+            <Card.Body className='flex justify-center items-center'>
               {(()=>{
                 if(loading){
                   return <ImSpinner2 size={30} className="animate-spin"/>
                 }else{
                   if (rooms){
-                    return <div className='h-full w-full grid gap-3 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+                    return <div className='grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6'>
                       {rooms?.map((item,i)=>{
                       return (<Card onClick={()=> (window.location.href = `/room/`+item.key)} key={item.key} bg="info" text="white" className='group overflow-hidden shadow-md cursor-pointer transition-all hover:shadow-lg hover:scale-105'>
-                        <Card.Img variant="top" className='-mb-11 w-44 h-28' src={(item.img)?(item.img):'/placeholder.png'}/>
+                        <Card.Img variant="top" className='-mb-10 w-44 h-28' src={(item.img)?(item.img):'/placeholder.png'}/>
                         <Card.Header className='text-md line-clamp-1'>{item.name}</Card.Header>
                         <Card.Body >
                           <Card.Text className='line-clamp-2 text-sm'>
@@ -165,7 +153,17 @@ export default function Home() {
             </Card.Footer>
           </Card>
         </div>
-    
+        <div className=''>
+          <Card className=''>
+            <Card.Header>Header</Card.Header>
+            <Card.Body className=''>
+              <Card.Text>
+                Some quick example text to build the card out and make up the bulk of
+                the card's content.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </div>
     </div>
   </div>
   );

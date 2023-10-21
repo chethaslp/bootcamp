@@ -1,4 +1,3 @@
-import './globals.css'
 import 'bootstrap/dist/css/bootstrap.css'
 import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
@@ -18,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${f.className} bg h-screen w-screen overflow-y-visible`}>  
+      <body className={`${f.className} bg`}>  
       <AuthContextProvider>
           {children}
       </AuthContextProvider>

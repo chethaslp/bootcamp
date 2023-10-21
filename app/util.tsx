@@ -1,5 +1,5 @@
 "use client"
-import {Dropdown, Image, ListGroup, Navbar } from "react-bootstrap";
+import {Badge, Dropdown, Image, ListGroup, Navbar } from "react-bootstrap";
 import {BiLinkExternal, BiFile, BiLinkAlt, BiCopy,BiText, BiDownload} from 'react-icons/bi'
 import {FcGoogle} from 'react-icons/fc'
 import { Comfortaa } from "next/font/google";
@@ -21,8 +21,8 @@ function copy(url:string){
   navigator.clipboard.writeText(url)
 }
 
-function ResourceItem({l_type, link}){
-  return (<div>
+function ResourceItem({l_type, link, className}){
+  return (<div className={className}>
     <ListGroup.Item className="!flex !flex-row items-center justify-between" >
       <span className="!flex !flex-row items-center ">
         {(()=>{
@@ -45,12 +45,25 @@ function ResourceItem({l_type, link}){
   </div>)
 }
 
-function ChatItem({msg, user}){
-  <ListGroup.Item>
-    {msg}
-  </ListGroup.Item>
+function ChatItem({e, msg, user}){
+  if(e == "userJoined"){
+    return <ListGroup.Item className="mb-1" >
+      <div className="!flex gap-1 flex-row border rounded bg-slate-200 p-1 items-center justify-center"><Image src={user.img} className="rounded w-5 mr-1"/> <span className="underline">{user.n}</span> &nbsp;joined the room. </div>
+    </ListGroup.Item>
+  }else{
+    const s = (user.me)? "rounded-br-none": "rounded-bl-none"
+    return <ListGroup.Item className="mb-1">
+      <div className={`border text-sm p-2 ${s} rounded-2xl `}><span className="underline">{user.n}:&nbsp;</span> {msg}</div>
+    </ListGroup.Item>
+  }
 }
 
+function ParticipantItem({user}){
+  return <ListGroup.Item className="text-sm !flex flex-row gap-1 items-center" >
+    <Image src={user.img} className="rounded w-5 mr-1"/> {user.n}
+      {/* <div className="!flex gap-1 flex-row border rounded bg-slate-200 p-1 items-center justify-center"></div> */}
+    </ListGroup.Item>
+}
 function UserBar(){
   const { user } = useAuthContext()
   if(!user) redirect("/signin?c="+usePathname())
@@ -92,4 +105,4 @@ return(
       </Navbar> )
 }
 
-export {ResourceItem, ChatItem, Nav, Logo};
+export {ResourceItem, ChatItem, ParticipantItem, Nav, Logo};

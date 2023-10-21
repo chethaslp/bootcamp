@@ -1,9 +1,6 @@
 "use client";
 import React from 'react';
-import {
-    onAuthStateChanged,
-    getAuth,
-} from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import {auth} from '@/components/fb/auth';
 import Loading from '@/app/loading';
 

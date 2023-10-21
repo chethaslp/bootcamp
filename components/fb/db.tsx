@@ -52,3 +52,5 @@ export async function createUser(u:User,un:string){
     email: u.email
   })
 }
+
+export {db}
