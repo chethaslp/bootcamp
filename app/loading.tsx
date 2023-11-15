@@ -3,7 +3,7 @@ import { Comfortaa } from "next/font/google";
 import { ImSpinner2 } from 'react-icons/im'
 
 
-const f = Comfortaa({ subsets: ['latin'] })
+const f = Comfortaa({ subsets: ['latin'], preload:true })
 
 export default function Loading({msg}) {
     return (

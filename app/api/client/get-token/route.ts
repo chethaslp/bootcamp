@@ -6,6 +6,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const roomId:string|null = req.nextUrl.searchParams.get("rid");
   const uid = req.nextUrl.searchParams.get("uid");
+  const dname = req.nextUrl.searchParams.get("name");
+  const userImg = req.nextUrl.searchParams.get("img");
+
   if (!roomId) {
     return NextResponse.json(
       { error: 'Missing "roomId".' },
@@ -16,8 +19,17 @@ export async function GET(req: NextRequest) {
       { error: 'Missing "uid".' },
       { status: 400 }
     );
+  } else if (!dname) {
+    return NextResponse.json(
+      { error: 'Missing "name".' },
+      { status: 400 }
+    );
+  } else if (!userImg) {
+    return NextResponse.json(
+      { error: 'Missing "userImg".' },
+      { status: 400 }
+    );
   }
-
   const apiKey = process.env.LIVEKIT_API_KEY;
   const apiSecret = process.env.LIVEKIT_API_SECRET;
   const wsUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
@@ -29,7 +41,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const at = new AccessToken(apiKey, apiSecret, { identity: uid });
+  const at = new AccessToken(apiKey, apiSecret, { identity: uid, name: dname, metadata: JSON.stringify({img:userImg}) });
 
   return get(child(db,'rooms/'+roomId)).then((snapshot) => {
     if (snapshot.exists()) {

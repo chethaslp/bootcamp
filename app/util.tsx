@@ -1,16 +1,12 @@
 "use client"
-import {Badge, Dropdown, Image, ListGroup, Navbar } from "react-bootstrap";
-import {BiLinkExternal, BiFile, BiLinkAlt, BiCopy,BiText, BiDownload} from 'react-icons/bi'
-import {FcGoogle} from 'react-icons/fc'
+import { Dropdown, Image, ListGroup, Navbar } from "react-bootstrap";
+import { BiLinkExternal, BiFile, BiLinkAlt, BiCopy,BiText, BiDownload } from 'react-icons/bi'
 import { Comfortaa } from "next/font/google";
-import {signin} from "@/components/fb/auth";
-import { Suspense } from "react";
-import Loading from "./loading";
+import { redirect, usePathname } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { signout } from "@/components/fb/auth";
-import { redirect, usePathname } from "next/navigation";
 
-const f = Comfortaa({ subsets: ['latin'] })
+const f = Comfortaa({ subsets: ['latin'], preload:true})
 
 function openLink(url:string){
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
@@ -92,14 +88,14 @@ function UserBar(){
 }
 
 function Logo({className}){
-  return <b className={f.className+' '+className}> &lt;Bootcamp/&gt;</b>
+  return <div><b className={f.className+' '+className}> &lt;Bootcamp/&gt;</b></div>
 }
 
 function Nav(){
 return(
       <Navbar expand="lg" bg="light" className='!justify-between border-b-4 p-2 shadow-lg' variant="light">
-        <Navbar.Brand className={`ml-5`}>
-          <Logo/>
+        <Navbar.Brand className={`ml-5 ${f.className}`}>
+          <b>&lt;Bootcamp/&gt;</b>
         </Navbar.Brand> 
         <UserBar/>
       </Navbar> )
