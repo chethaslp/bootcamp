@@ -9,7 +9,7 @@ import { createUser } from "@/components/fb/db";
 import { useSearchParams } from "next/navigation";
 
 
-export default function page() {
+export default function Page() {
     const [dname, setDname] = useState("");
     const [form_valid, setValid] = useState(false);
     const [loading, setLoading] = useState(false);

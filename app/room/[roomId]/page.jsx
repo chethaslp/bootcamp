@@ -15,9 +15,9 @@ function VideoGrid({token}){
 const cameraTracks = useTracks([Track.Source.Camera], {onlySubscribed: true});
 return (
   <div className='h-full'>
-    {cameraTracks.map((trackReference) => {
+    {cameraTracks.map((trackReference,i) => {
       return (
-        <VideoTrack {...trackReference} />
+        <VideoTrack {...trackReference} key={`view-${i}`}/>
       )
     })}
   </div>
@@ -117,8 +117,8 @@ function ChatBar({user}){
   return <Card className='shadow-md !h-full'>
             <Card.Header className='flex flex-row justify-center align-middle'><span className='flex flex-row justify-center items-center'><PiChatsDuotone className="mr-2"/>Chat</span></Card.Header>
             <Card.Body className='gap-1 overflow-auto'>
-              {chatMessages.map((msg)=>{
-                return <ChatItem e={"msg"} user={{ n: msg.from?.name, img: JSON.parse(msg.from?.metadata).img, me: (msg.from?.identity==user.uid)}} msg={msg.message} />
+              {chatMessages.map((msg,i)=>{
+                return <ChatItem e={"msg"} user={{ n: msg.from?.name, img: JSON.parse(msg.from?.metadata).img, me: (msg.from?.identity==user.uid)}} msg={msg.message} key={msg.from?.identity+i.toString()} />
               })}
               {/* <ChatItem e={"gtr"} msg={"hi"} user={{me:true, n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}} />
               <ChatItem e={"gtr"} msg={"<script>console.log('hi')</script> hnmghnghnghnghngngngng \n fbfdbdfbdfbdfb\ndggyy"} user={{me:true,n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}} /> */}
@@ -169,7 +169,7 @@ export default function Home({ params }) {
   <div className='flex bg flex-col h-screen w-screen items-center text-white'>
     <div className='flex flex-row items-center h-[95%] '>
       <FaUsersSlash size={30}/>
-      <span className='ml-3 border-l-2 pl-3'> This Room doesn't exist :/</span>
+      <span className='ml-3 border-l-2 pl-3'> This Room doesn&apos;t exist :/</span>
     </div>
     <div className='h-[5%]'>
       <Link href='/host' className='no-underline'>Go Back</Link>

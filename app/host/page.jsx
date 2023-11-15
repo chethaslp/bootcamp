@@ -12,9 +12,9 @@ import { useAuthContext } from '@/context/AuthContext';
 
 export default function Home() {
   const [rooms,setRooms] = useState()
-  const [roomName, setRoomName] = useState<string>()
-  const [roomDesc, setRoomDesc] = useState<string>()
-  const [roomImg, setRoomImg] = useState<File>()
+  const [roomName, setRoomName] = useState()
+  const [roomDesc, setRoomDesc] = useState()
+  const [roomImg, setRoomImg] = useState()
 
   const [btnDisabled, setDisbled] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -158,8 +158,7 @@ export default function Home() {
             <Card.Header>Header</Card.Header>
             <Card.Body className=''>
               <Card.Text>
-                Some quick example text to build the card out and make up the bulk of
-                the card's content.
+                Example Text.
               </Card.Text>
             </Card.Body>
           </Card>

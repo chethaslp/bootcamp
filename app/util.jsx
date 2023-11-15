@@ -8,12 +8,12 @@ import { signout } from "@/components/fb/auth";
 
 const f = Comfortaa({ subsets: ['latin'], preload:true})
 
-function openLink(url:string){
+function openLink(url){
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
     if (newWindow) newWindow.opener = null
 }
 
-function copy(url:string){
+function copy(url){
   navigator.clipboard.writeText(url)
 }
 
@@ -44,7 +44,7 @@ function ResourceItem({l_type, link, className}){
 function ChatItem({e, msg, user}){
   if(e == "userJoined"){
     return <ListGroup.Item className="mb-1" >
-      <div className="!flex gap-1 flex-row border rounded bg-slate-200 p-1 items-center justify-center"><Image src={user.img} className="rounded w-5 mr-1"/> <span className="underline">{user.n}</span> &nbsp;joined the room. </div>
+      <div className="!flex gap-1 flex-row border rounded bg-slate-200 p-1 items-center justify-center"><Image src={user.img} alt="Profile Image" className="rounded w-5 mr-1"/> <span className="underline">{user.n}</span> &nbsp;joined the room. </div>
     </ListGroup.Item>
   }else{
     const s = (user.me)? "rounded-br-none": "rounded-bl-none"
@@ -62,7 +62,8 @@ function ParticipantItem({user}){
 }
 function UserBar(){
   const { user } = useAuthContext()
-  if(!user) redirect("/signin?c="+usePathname())
+  const path = usePathname()
+  if(!user) redirect("/signin?c="+path)
   return(
     <Dropdown>
       <Dropdown.Toggle className="!flex p-2 cursor-pointer border rounded-md !text-black !flex-row justify-center items-center bg-white hover:!bg-slate-300 transition-all">

@@ -11,7 +11,7 @@ export function getUserRooms(user,cb){
     
     get(query(child(db,'rooms'), ...[orderByChild("user"),equalTo(user.uid)])).then((snapshot) => {
         if (snapshot.exists()) {
-            let rfr: any[] = []
+            let rfr = []
             snapshot.forEach((c)=>{
                 rfr.push({...c.val(), ...{'key': c.key}})
             })
@@ -25,7 +25,7 @@ export function getUserRooms(user,cb){
       });
 }
 
-export function createUserRoom(d,roomImg?:File,cb){
+export function createUserRoom(d,roomImg,cb){
     const key = (Math.random() + 1).toString(36).substring(7)
     d.key=key;
 
@@ -45,7 +45,7 @@ export function createUserRoom(d,roomImg?:File,cb){
     }
 }
 
-export async function createUser(u:User,un:string){
+export async function createUser(u,un){
   await set(child(db,`users/${u.uid}`),{
     dname: un,
     name: u.displayName,

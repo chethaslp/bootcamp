@@ -3,8 +3,8 @@ import { child, get, query } from "firebase/database";
 import { AccessToken } from "livekit-server-sdk";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
-  const roomId:string|null = req.nextUrl.searchParams.get("rid");
+export async function GET(req) {
+  const roomId = req.nextUrl.searchParams.get("rid");
   const uid = req.nextUrl.searchParams.get("uid");
   const dname = req.nextUrl.searchParams.get("name");
   const userImg = req.nextUrl.searchParams.get("img");
