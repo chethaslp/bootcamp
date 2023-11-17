@@ -106,7 +106,7 @@ function QnaDialog(){
     room.localParticipant.publishData(encoder.encode(JSON.stringify(["qna",room.localParticipant.identity,1,"Sample Question",["o1","o2","o3","o4"]])), DataPacket_Kind.LOSSY,{topic:"qna"})
   }
   return <>
-  <button onClick={()=>send()}>ok</button>
+  {/* <button onClick={()=>send()}>ok</button> */}
   <Modal centered show={showModal} onHide={handleCloseModal}>
   <Modal.Header closeButton>
       <Modal.Title>{qna[3]}</Modal.Title>
@@ -143,6 +143,13 @@ function QnaDialog(){
 </Modal>
 </>
 
+}
+function ResoursesBar(){
+  <ListGroup>
+    <ResourceItem l_type="file" link="dccsc" className={undefined} ></ResourceItem>
+    <ResourceItem l_type="text" link="dbytjndn" className={undefined}></ResourceItem>
+    <ResourceItem l_type="site" link="dbytjndn" className={undefined}></ResourceItem>
+  </ListGroup>
 }
 
 function ChatBar({user}){
@@ -194,7 +201,7 @@ function SideBar(){
               })}
             </Tab.Pane>
             <Tab.Pane eventKey="resources-bar">
-              <ChatBar/>
+              <ResoursesBar/>
             </Tab.Pane>
           </Tab.Content>
         
@@ -280,37 +287,19 @@ export default function Home({ params }) {
       >
         <QnaDialog/>
         <div  className='flex p-3 h-full gap-2 overflow-auto'>
-        {/* PARTICIPANTS BAR */}
+        {/* SIDE BAR */}
         <div className='h-full w-1/5 md:flex hidden'>
           <SideBar/>
         </div>
 
         <div className='h-full pb-2 w-full md:w-4/5'>
           {/* STREAM VIEW */}
-          <div className='mb-2 h-1/2'>
             <Card className='shadow-md !h-full !flex flex-col !bg-slate-800'>
                   <RoomAudioRenderer/>
                   <VideoGrid  token={token}/>
             </Card>
-            <ControlBar />
-          </div>
-          <div className='h-1/2 grid grid-flow-row md:grid-cols-2 gap-2 grid-cols-1'>
-            {/* CHAT BAR */}
-            <ChatBar user={user}/>
+        </div>
 
-            {/* RESOURCES BAR */}
-              <Card className='shadow-md !h-full'>
-                <Card.Header className='flex flex-row justify-center align-middle'><span className='flex flex-row justify-center items-center'><PiFoldersDuotone className="mr-2"/>Resources</span></Card.Header>
-                <Card.Body>
-                  <ListGroup>
-                    <ResourceItem l_type="file" link="dccsc" className={undefined} ></ResourceItem>
-                    <ResourceItem l_type="text" link="dbytjndn" className={undefined}></ResourceItem>
-                    <ResourceItem l_type="site" link="dbytjndn" className={undefined}></ResourceItem>
-                  </ListGroup>
-                </Card.Body>
-              </Card>
-          </div>
-          </div>
           </div>
         </LiveKitRoom>
         </div>
