@@ -55,9 +55,10 @@ function ChatItem({e, msg, user}){
 }
 
 function ParticipantItem({user}){
-  return <ListGroup.Item className="text-sm !flex flex-row gap-1 items-center" >
-    <Image src={user.img} className="rounded w-5 mr-1"/> {user.n}
-      {/* <div className="!flex gap-1 flex-row border rounded bg-slate-200 p-1 items-center justify-center"></div> */}
+  return <ListGroup.Item className="text-sm !flex flex-row gap-1 items-center" {...user.me?"active":""}>
+    <Image src={user.img} className="rounded w-6 mr-1"/> 
+    <div className="w-2/3">{user.n}</div>
+      {(user.host)?<div className="!flex gap-1 w-1/3 flex-row border rounded bg-sky-400 text-white p-1 items-center justify-center">Host</div>:null}
     </ListGroup.Item>
 }
 function UserBar(){

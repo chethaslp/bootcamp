@@ -1,8 +1,9 @@
 "use client"
 import { Button, Card, Col, FloatingLabel, Form, InputGroup, ListGroup, Modal, Row } from 'react-bootstrap';
 import { PiChatsDuotone, PiFoldersDuotone, PiUsersDuotone } from 'react-icons/pi';
-import { FaUsersSlash } from "react-icons/fa";
+import { FaSpinner, FaUsersSlash } from "react-icons/fa";
 import { ChatItem, Nav, ParticipantItem, ResourceItem } from '../../util';
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from 'react';
 import { useAuthContext } from '@/context/AuthContext';
 import { GridLayout, LiveKitRoom, ParticipantTile, RoomAudioRenderer, useTracks, useChat, useRoomContext, ParticipantLoop, ParticipantName, useParticipants, useDataChannel, VideoTrack } from '@livekit/components-react';
@@ -40,9 +41,13 @@ function ParticipantBar() {
   // Render a list of all participants in the room.
   const participants = useParticipants();
   
-  <ParticipantLoop participants={participants}>
-    <ParticipantName />
-  </ParticipantLoop>;
+  if (participants.size == 1) return <FaSpinner className='animate-spin'/>
+  return <ListGroup>
+    {participants.map((prts)=>{
+      const mtd = JSON.parse(prts.metadata || '{"img":""}')
+      return <ParticipantItem user={{me:prts.isLocal, n:prts.name, img:mtd.img, host:mtd.host}}/>
+    })}
+  </ListGroup>
 }
 
 function QnaDialog(){
@@ -117,8 +122,9 @@ function ChatBar({user}){
   return <Card className='shadow-md !h-full'>
             <Card.Header className='flex flex-row justify-center align-middle'><span className='flex flex-row justify-center items-center'><PiChatsDuotone className="mr-2"/>Chat</span></Card.Header>
             <Card.Body className='gap-1 overflow-auto'>
+              <center><small className='text-muted bg-slate-400 rounded p-2'>Messaged sent here is visible to all participants in the room.</small></center>
               {chatMessages.map((msg,i)=>{
-                return <ChatItem e={"msg"} user={{ n: msg.from?.name, img: JSON.parse(msg.from?.metadata).img, me: (msg.from?.identity==user.uid)}} msg={msg.message} key={msg.from?.identity+i.toString()} />
+                return <ChatItem e={"msg"} user={{ n: msg.from?.name, img: JSON.parse(msg.from?.metadata).img, me: msg.from.isLocal}} msg={msg.message} key={msg.from?.identity+i.toString()} />
               })}
               {/* <ChatItem e={"gtr"} msg={"hi"} user={{me:true, n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}} />
               <ChatItem e={"gtr"} msg={"<script>console.log('hi')</script> hnmghnghnghnghngngngng \n fbfdbdfbdfbdfb\ndggyy"} user={{me:true,n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}} /> */}

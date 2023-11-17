@@ -41,11 +41,11 @@ export async function GET(req) {
     );
   }
 
-  const at = new AccessToken(apiKey, apiSecret, { identity: uid, name: dname, metadata: JSON.stringify({img:userImg}) });
 
   return get(child(db,'rooms/'+roomId)).then((snapshot) => {
     if (snapshot.exists()) {
       const d = snapshot.val()
+      const at = new AccessToken(apiKey, apiSecret, { identity: uid, name: dname, metadata: JSON.stringify({img:userImg, host:(d.user == uid)}) });
       at.addGrant({ roomId, roomJoin: true, canPublish: (d.user == uid) , canPublishData : true, canSubscribe: true });
       return NextResponse.json({ token: at.toJwt() });
     } else {
