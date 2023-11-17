@@ -145,10 +145,10 @@ function QnaDialog(){
 
 }
 function ResoursesBar(){
-  <ListGroup>
-    <ResourceItem l_type="file" link="dccsc" className={undefined} ></ResourceItem>
-    <ResourceItem l_type="text" link="dbytjndn" className={undefined}></ResourceItem>
-    <ResourceItem l_type="site" link="dbytjndn" className={undefined}></ResourceItem>
+  return <ListGroup>
+    <ResourceItem l_type="file" link="dccsc"></ResourceItem>
+    <ResourceItem l_type="text" link="dbytjndn"></ResourceItem>
+    <ResourceItem l_type="site" link="dbytjndn"></ResourceItem>
   </ListGroup>
 }
 

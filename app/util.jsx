@@ -17,8 +17,8 @@ function copy(url){
   navigator.clipboard.writeText(url)
 }
 
-function ResourceItem({l_type, link, className}){
-  return (<div className={className}>
+function ResourceItem({l_type, link}){
+  return (
     <ListGroup.Item className="!flex !flex-row items-center justify-between" >
       <span className="!flex !flex-row items-center ">
         {(()=>{
@@ -36,9 +36,7 @@ function ResourceItem({l_type, link, className}){
           (l_type==="file")?<BiDownload className="ml-3 cursor-pointer" onClick={() => openLink(link)}/>:''
         }
       </span>
-    </ListGroup.Item>
-
-  </div>)
+    </ListGroup.Item>)
 }
 
 function ChatItem({e, msg, user}){
