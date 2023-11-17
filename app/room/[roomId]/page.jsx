@@ -1,53 +1,83 @@
 "use client"
-import { Button, Card, Col, FloatingLabel, Form, InputGroup, ListGroup, Modal, Row } from 'react-bootstrap';
-import { PiChatsDuotone, PiFoldersDuotone, PiUsersDuotone } from 'react-icons/pi';
+import { Button, Card, Col, FloatingLabel, Form, InputGroup, ListGroup, Modal, Row, Tab, Nav } from 'react-bootstrap';
+import { PiChatsDuotone, PiFoldersDuotone, PiUsersDuotone, PiUserRectangleDuotone} from 'react-icons/pi';
 import { FaSpinner, FaUsersSlash } from "react-icons/fa";
-import { ChatItem, Nav, ParticipantItem, ResourceItem } from '../../util';
+import '@livekit/components-styles';
+import { ChatItem, NavBar, ParticipantItem, ResourceItem } from '../../util';
+
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from 'react';
 import { useAuthContext } from '@/context/AuthContext';
-import { GridLayout, LiveKitRoom, ParticipantTile, RoomAudioRenderer, useTracks, useChat, useRoomContext, ParticipantLoop, ParticipantName, useParticipants, useDataChannel, VideoTrack } from '@livekit/components-react';
+import { GridLayout, LiveKitRoom, ParticipantTile, RoomAudioRenderer, useTracks, useChat, useRoomContext,  useParticipants, useDataChannel, VideoTrack, FocusLayout, FocusLayoutContainer, ControlBar, TrackLoop } from '@livekit/components-react';
 import Loading from '@/app/loading';
 import { DataPacket_Kind, Participant, RoomEvent, Track } from 'livekit-client';
 import Link from 'next/link';
 
 
 function VideoGrid({token}){
-const cameraTracks = useTracks([Track.Source.Camera], {onlySubscribed: true});
-return (
-  <div className='h-full'>
-    {cameraTracks.map((trackReference,i) => {
-      return (
-        <VideoTrack {...trackReference} key={`view-${i}`}/>
-      )
-    })}
-  </div>
-)
-  // const tracks = useTracks(
-  //   [
-  //     { source: Track.Source.Camera, withPlaceholder: true },
-  //     { source: Track.Source.ScreenShare, withPlaceholder: false },
-  //   ],
-  //   { onlySubscribed: false },
-  // );
+// const cameraTracks = useTracks([Track.Source.Camera], {onlySubscribed: true});
+// const ssTracks = useTracks([Track.Source.ScreenShare], {onlySubscribed: true});
 
-  // return (
-  //   <GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
-  //     <ParticipantTile />
-  //   </GridLayout>)
+// return (
+//   <div className='h-full w-full'>
+//     <FocusLayoutContainer className='w-full'>
+//     {cameraTracks.map((trackReference,i) => {
+//       return (
+//         // <VideoTrack {...trackReference} key={`view-${i}`}/>
+//         <FocusLayout trackRef={trackReference}/>
+//       )
+//     })}
+//     </FocusLayoutContainer>
+//     <FocusLayoutContainer className='h-full w-full' hidden={(ssTracks.length==0)}>
+//     {ssTracks.map((trackReference,i) => {
+//       return (
+//         // <VideoTrack {...trackReference} key={`view-${i}`}/>
+//         <FocusLayout trackRef={trackReference}/>
+//       )
+//     })}
+//     </FocusLayoutContainer>
+//     <TrackLoop tracks={cameraTracks}>
+//       <ParticipantTile />
+//     </TrackLoop>
+//   </div>
+// )
+  const tracks = useTracks(
+    [
+      { source: Track.Source.Camera, withPlaceholder: true },
+      { source: Track.Source.ScreenShare, withPlaceholder: false },
+    ],
+    { onlySubscribed: false },
+  );
+
+  return (
+    <GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
+      <ParticipantTile />
+    </GridLayout>)
 }
 
 function ParticipantBar() {
   // Render a list of all participants in the room.
   const participants = useParticipants();
+
+  var prpts = [], hosts = [];
+  participants.map((prts)=>{
+    const mtd = JSON.parse(prts.metadata || '{"img":""}')
+    if(mtd.host){
+      hosts.push(<ParticipantItem user={{me:prts.isLocal, n:prts.name, img:mtd.img, host:mtd.host}} key={`pt-${prts.identity}`} />)
+    }else{
+      prpts.push(<ParticipantItem user={{me:prts.isLocal, n:prts.name, img:mtd.img, host:mtd.host}} key={`pt-${prts.identity}`} />)
+    }
+  })
   
-  if (participants.size == 1) return <FaSpinner className='animate-spin'/>
-  return <ListGroup>
-    {participants.map((prts)=>{
-      const mtd = JSON.parse(prts.metadata || '{"img":""}')
-      return <ParticipantItem user={{me:prts.isLocal, n:prts.name, img:mtd.img, host:mtd.host}}/>
-    })}
-  </ListGroup>
+  if (participants.length == 0) return <FaSpinner className='animate-spin'/>
+  return <div className=''>
+    <span className='mb-2 ml-1'>Hosts</span>
+    <ListGroup className='p-1 mb-2'>{hosts.map((prt)=>prt)}</ListGroup>
+    <span className='mb-2 ml-1'>Partcipants</span>
+    {(prpts.length!=0)?<>
+      <ListGroup className='p-1'>{prpts.map((prt)=>prt)}</ListGroup>
+    </>:<div className='flex justify-center'><small className='text-muted'>No Participants so far.</small></div>}
+  </div>
 }
 
 function QnaDialog(){
@@ -116,20 +146,65 @@ function QnaDialog(){
 }
 
 function ChatBar({user}){
-  const [msg, setMsg] = useState("");
-  const {send, chatMessages, isSending} = useChat()
+
 
   return <Card className='shadow-md !h-full'>
             <Card.Header className='flex flex-row justify-center align-middle'><span className='flex flex-row justify-center items-center'><PiChatsDuotone className="mr-2"/>Chat</span></Card.Header>
             <Card.Body className='gap-1 overflow-auto'>
-              <center><small className='text-muted bg-slate-400 rounded p-2'>Messaged sent here is visible to all participants in the room.</small></center>
-              {chatMessages.map((msg,i)=>{
-                return <ChatItem e={"msg"} user={{ n: msg.from?.name, img: JSON.parse(msg.from?.metadata).img, me: msg.from.isLocal}} msg={msg.message} key={msg.from?.identity+i.toString()} />
-              })}
+             
               {/* <ChatItem e={"gtr"} msg={"hi"} user={{me:true, n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}} />
               <ChatItem e={"gtr"} msg={"<script>console.log('hi')</script> hnmghnghnghnghngngngng \n fbfdbdfbdfbdfb\ndggyy"} user={{me:true,n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}} /> */}
             </Card.Body>
             <Card.Footer className='flex'>
+             
+            </Card.Footer>
+          </Card>
+}
+
+function SideBar(){
+
+    // CHATBAR: state vars
+    const [msg, setMsg] = useState("");
+    const {send, chatMessages, isSending} = useChat()
+
+  return <Card className='shadow-md !h-full w-full'>
+      <Tab.Container id="tab-container" defaultActiveKey="participants-bar">
+      <Card.Header className='flex flex-row justify-center align-middle'>
+        <Nav variant="tabs" className="flex-row">
+            <Nav.Item>
+              <Nav.Link eventKey="participants-bar" className='group/pr'><span className='flex flex-row justify-center items-center'> <PiUsersDuotone size={25} className={"mr-2"} /> <span className='hidden group-aria-selected/pr:block'>Participants</span></span></Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="chat-bar" className='group/ch'><span className='flex flex-row justify-center items-center'><PiChatsDuotone className="mr-2"size={25}/><span className='hidden group-aria-selected/ch:block'>Chats</span></span></Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="resources-bar" className='group/re'><span className='flex flex-row justify-center items-center'><PiFoldersDuotone className="mr-2"size={25}/><span className='hidden group-aria-selected/re:block'>Resourses</span></span></Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </Card.Header>
+      <Card.Body className='overflow-auto'>
+      <Tab.Content>
+            <Tab.Pane eventKey="participants-bar">
+                <ParticipantBar/>
+            </Tab.Pane>
+            <Tab.Pane eventKey="chat-bar">
+              <center className='mb-2'><small className='text-muted p-2'>Messaged sent here is visible to all participants in the room.</small></center>
+              {chatMessages.map((msg,i)=>{
+                return <ChatItem e={"msg"} user={{ n: msg.from?.name, img: JSON.parse(msg.from?.metadata).img, me: msg.from.isLocal}} msg={msg.message} key={msg.from?.identity+i.toString()} />
+              })}
+            </Tab.Pane>
+            <Tab.Pane eventKey="resources-bar">
+              <ChatBar/>
+            </Tab.Pane>
+          </Tab.Content>
+        
+      </Card.Body>
+      <Card.Footer>
+      <Tab.Content>
+            <Tab.Pane  eventKey="participants-bar">
+                <ControlBar variation='minimal'/>
+            </Tab.Pane>
+            <Tab.Pane eventKey="chat-bar">
               <InputGroup className=' justify-around'>
                 <input type="text" className='p-2 grow border' placeholder='Send a message' value={msg} onChange={(e)=> setMsg(e.target.value)} onKeyDown={(e)=>{if (e.key === 'Enter' && msg != "") {send(msg); setMsg("")}}}></input>
                 <Button onClick={()=>{
@@ -138,8 +213,15 @@ function ChatBar({user}){
                   setMsg("")
                 }}>Send</Button>
               </InputGroup>
-            </Card.Footer>
-          </Card>
+            </Tab.Pane>
+            <Tab.Pane eventKey="resources-bar">
+            
+            </Tab.Pane>
+          </Tab.Content>
+      </Card.Footer>
+    </Tab.Container>
+    </Card>
+
 }
 
 export default function Home({ params }) {
@@ -187,41 +269,20 @@ export default function Home({ params }) {
   </div>
   </>:
     <div className='flex bg flex-col h-screen w-screen'>
-      <Nav/>
+      <NavBar/>
       <LiveKitRoom
                 video={true}
                 audio={true}
                 token={token}
                 connectOptions={{ autoSubscribe: true }}
                 serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-                data-lk-theme="default"
                 style={{ height: '100%', overflow:"auto" }}
       >
         <QnaDialog/>
         <div  className='flex p-3 h-full gap-2 overflow-auto'>
         {/* PARTICIPANTS BAR */}
         <div className='h-full w-1/5 md:flex hidden'>
-          <Card className='shadow-md !h-full w-full'>
-            <Card.Header className='flex flex-row justify-center align-middle'><span className='flex flex-row justify-center items-center'> <PiUsersDuotone className={"mr-2.5"} /> Participants </span></Card.Header>
-            <Card.Body className='overflow-auto'>
-              {/* Hosts
-            <ListGroup className='mb-2 mt-1'>
-              
-              {new Array(2).fill("H").map((t) => (
-                <ParticipantItem user={{me:true, n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}}/>
-              ))}
-                
-              </ListGroup>
-              Participants
-              <ListGroup className='mt-1'>
-              {new Array(10).fill("H").map((t) => (
-                <ParticipantItem user={{me:true, n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}}/>
-              ))}
-                
-              </ListGroup> */}
-              <ParticipantBar/>
-            </Card.Body>
-          </Card>
+          <SideBar/>
         </div>
 
         <div className='h-full pb-2 w-full md:w-4/5'>
@@ -231,6 +292,7 @@ export default function Home({ params }) {
                   <RoomAudioRenderer/>
                   <VideoGrid  token={token}/>
             </Card>
+            <ControlBar />
           </div>
           <div className='h-1/2 grid grid-flow-row md:grid-cols-2 gap-2 grid-cols-1'>
             {/* CHAT BAR */}

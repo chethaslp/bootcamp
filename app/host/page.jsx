@@ -3,7 +3,7 @@ import { Button, Card, Col, Dropdown, FloatingLabel, Form, InputGroup, ListGroup
 import { HiUserGroup } from 'react-icons/hi2';
 import { MdGroupAdd, MdGroupOff} from 'react-icons/md'
 import { ImSpinner2 } from 'react-icons/im'
-import { Nav } from '@/app/util';
+import { NavBar } from '@/app/util';
 import { useEffect, useRef, useState } from 'react';
 import { createUserRoom, getUserRooms } from '@/components/fb/db';
 
@@ -110,7 +110,7 @@ export default function Home() {
         </Form>
       </Modal>
       
-      <Nav/>
+      <NavBar/>
       <div className=' p-3  gap-3 grid'>
         <div className=''>
           <Card className='shadow-md'>

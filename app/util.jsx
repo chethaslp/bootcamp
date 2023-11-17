@@ -55,7 +55,7 @@ function ChatItem({e, msg, user}){
 }
 
 function ParticipantItem({user}){
-  return <ListGroup.Item className="text-sm !flex flex-row gap-1 items-center" {...user.me?"active":""}>
+  return <ListGroup.Item className="text-sm !flex flex-row gap-1 items-center" active={user.me}>
     <Image src={user.img} className="rounded w-6 mr-1"/> 
     <div className="w-2/3">{user.n}</div>
       {(user.host)?<div className="!flex gap-1 w-1/3 flex-row border rounded bg-sky-400 text-white p-1 items-center justify-center">Host</div>:null}
@@ -93,7 +93,7 @@ function Logo({className}){
   return <div><b className={f.className+' '+className}> &lt;Bootcamp/&gt;</b></div>
 }
 
-function Nav(){
+function NavBar(){
 return(
       <Navbar expand="lg" bg="light" className='!justify-between border-b-4 p-2 shadow-lg' variant="light">
         <Navbar.Brand className={`ml-5 ${f.className}`}>
@@ -103,4 +103,4 @@ return(
       </Navbar> )
 }
 
-export {ResourceItem, ChatItem, ParticipantItem, Nav, Logo};
+export {ResourceItem, ChatItem, ParticipantItem, NavBar, Logo};
