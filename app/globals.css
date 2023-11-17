@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg {
-  background: linear-gradient(0deg, #40DFFF,#25abff) no-repeat;
+body, .bg {
+  background: linear-gradient(100deg, #40DFFF,#25abff) repeat;
   overflow: hidden;
 }
 
@@ -17,3 +17,11 @@
   transition: width 0.5s, height 0.5s, opacity 0.5s 0.5s;
 
 }
+
+/* button {
+  background-color: var(--bs-btn-bg) !important;
+}
+
+button:hover {
+  background-color: var(--bs-btn-hover-color) !important;
+} */

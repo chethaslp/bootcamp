@@ -124,7 +124,7 @@ export default function Home() {
                     return <div className='grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6'>
                       {rooms?.map((item,i)=>{
                       return (<Card onClick={()=> (window.location.href = `/room/`+item.key)} key={item.key} bg="info" text="white" className='group overflow-hidden shadow-md cursor-pointer transition-all hover:shadow-lg hover:scale-105'>
-                        <Card.Img variant="top" className='-mb-10 w-44 h-28' src={(item.img)?(item.img):'/placeholder.png'}/>
+                        <Card.Img variant="top" className='-mb-10  h-28' src={(item.img)?(item.img):'/placeholder.png'}/>
                         <Card.Header className='text-md line-clamp-1'>{item.name}</Card.Header>
                         <Card.Body >
                           <Card.Text className='line-clamp-2 text-sm'>

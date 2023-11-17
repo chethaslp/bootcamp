@@ -140,7 +140,10 @@ export default function Home({ params }) {
 
   const { user } = useAuthContext()
   const roomId = params.roomId
+  const path = usePathname()
   const [token, setToken] = useState("");
+  
+  if(!user) redirect("/signin?c="+path)
   
   useEffect(() => {
     (async () => {
