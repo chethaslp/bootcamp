@@ -41,7 +41,8 @@ export default function Home() {
 
     setDisbled(true)
     createUserRoom({
-        user: user.uid,
+        shost: user.uid,
+        host:[user.uid],
         name: roomName,
         desc: roomDesc
     },roomImg,()=>{

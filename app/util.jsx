@@ -2,7 +2,7 @@
 import { Dropdown, Image, ListGroup, Navbar } from "react-bootstrap";
 import { BiLinkExternal, BiFile, BiLinkAlt, BiCopy,BiText, BiDownload } from 'react-icons/bi'
 import { Comfortaa } from "next/font/google";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { signout } from "@/components/fb/auth";
 
@@ -15,6 +15,10 @@ function openLink(url){
 
 function copy(url){
   navigator.clipboard.writeText(url)
+}
+
+function redirect(url){
+  window.location.href = url;
 }
 
 function ResourceItem({l_type, link}){
@@ -101,4 +105,4 @@ return(
       </Navbar> )
 }
 
-export {ResourceItem, ChatItem, ParticipantItem, NavBar, Logo};
+export {ResourceItem, ChatItem, ParticipantItem, NavBar, Logo, redirect};
