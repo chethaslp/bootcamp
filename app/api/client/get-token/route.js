@@ -1,13 +1,17 @@
 import { db } from "@/components/fb/db";
-import { child, get, query } from "firebase/database";
+import { doc, getDoc, collection, setDoc, getDocs, query, where, getFirestore} from "firebase/firestore";
+import { Room, roomConv } from '../../../../components/models'
 import { AccessToken } from "livekit-server-sdk";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+
 
 export async function GET(req) {
   const roomId = req.nextUrl.searchParams.get("rid");
   const uid = req.nextUrl.searchParams.get("uid");
   const dname = req.nextUrl.searchParams.get("name");
   const userImg = req.nextUrl.searchParams.get("img");
+
+  const roomRef = collection(db, "rooms");
 
   if (!roomId) {
     return NextResponse.json(
@@ -41,23 +45,16 @@ export async function GET(req) {
     );
   }
 
-
-  return get(child(db,'rooms/'+roomId)).then((snapshot) => {
-    if (snapshot.exists()) {
-      const d = snapshot.val()
-      const at = new AccessToken(apiKey, apiSecret, { identity: uid, name: dname, metadata: JSON.stringify({img:userImg, host:(uid in d.host)}) });
-      at.addGrant({ roomId, roomJoin: true, canPublish: (uid in d.host) , canPublishData : true, canSubscribe: true });
-      return NextResponse.json({ token: at.toJwt() });
-    } else {
-        return NextResponse.json(
-          { error: "Room doesn't exist." },
-          { status: 404 }
-        )
-    }
-  }).catch((error) => {
-    return NextResponse.json(
-      { error: "An Error Occured while processing the request." },
-      { status: 500 }
-    );
-  });
+  const d = await getDoc(doc(roomRef, roomId).withConverter(roomConv))
+  if (d.exists()) {
+    const data = d.data()
+    const at = new AccessToken(apiKey, apiSecret, { identity: uid, name: dname, metadata: JSON.stringify({img:userImg, host: data.isHost(uid)}) });
+    at.addGrant({ roomId, roomJoin: true, canPublish: data.isHost(uid) , canPublishData : true, canSubscribe: true });
+    return NextResponse.json({ token: at.toJwt(), room: JSON.stringify(data) });
+  } else {
+      return NextResponse.json(
+        { error: "Room doesn't exist." },
+        { status: 404 }
+      )
+  }
 }

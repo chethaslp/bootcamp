@@ -3,10 +3,11 @@ import { Card, Form } from "react-bootstrap";
 import { Logo } from "../util";
 import { FcGoogle } from "react-icons/fc";
 import { ImSpinner2 } from 'react-icons/im'
-import { signin } from "@/components/fb/auth";
+import { auth, signin } from "@/components/fb/auth";
 import { useState } from "react";
 import { createUser } from "@/components/fb/db";
 import { useSearchParams } from "next/navigation";
+import { signOut } from "firebase/auth";
 
 
 export default function Page() {
@@ -15,7 +16,9 @@ export default function Page() {
     const [loading, setLoading] = useState(false);
     const [form_invalid, setInvalid] = useState(false);
     const forwordURL = useSearchParams().get('c')
+    const signout = useSearchParams().get('signout')
 
+    if (signout) signOut(auth)
     return (
         <div className="flex gap-4 flex-col h-screen justify-center items-center">
             <Logo className="text-3xl text-white" />
@@ -45,9 +48,9 @@ export default function Page() {
                             else {
                                 setLoading(true)
                                 signin().then((result) => {
-                                    createUser(result.user,dname);
-                                    (forwordURL)?(window.location.href = forwordURL):(window.location.href = "/host")
-                                    
+                                    createUser(result.user, dname).then(()=>{
+                                        (forwordURL)?(window.location.href = forwordURL):(window.location.href = "/host")
+                                    })
                                   }).catch((error) => {
                                     setLoading(false);
                                     setValid(false)

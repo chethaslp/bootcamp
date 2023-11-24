@@ -51,14 +51,14 @@ function ChatItem({e, msg, user}){
   }else{
     const s = (user.me)? "rounded-br-none": "rounded-bl-none"
     return <ListGroup.Item className="mb-1">
-      <div className={`border text-sm p-2 ${s} rounded-2xl `}><span className="underline">{user.n}:&nbsp;</span> {msg}</div>
+      <div className={`border text-sm p-2 bg-blue-500 text-white ${s} rounded-2xl `}><span className="font-semibold">{user.n}</span>:&nbsp; {msg}</div>
     </ListGroup.Item>
   }
 }
 
 function ParticipantItem({user}){
   return <ListGroup.Item className="text-sm !flex flex-row gap-1 items-center" active={user.me}>
-    <Image src={user.img} className="rounded w-6 mr-1"/> 
+    <Image src={user.img} crossOrigin="anonymous" className="rounded w-6 mr-1"/> 
     <div className="w-2/3">{user.n}</div>
       {(user.host)?<div className="!flex gap-1 w-1/3 flex-row border rounded bg-sky-400 text-white p-1 items-center justify-center">Host</div>:null}
     </ListGroup.Item>
@@ -70,12 +70,12 @@ function UserBar(){
   return(
     <Dropdown>
       <Dropdown.Toggle className="!flex p-2 cursor-pointer border rounded-md !text-black !flex-row justify-center items-center bg-white hover:!bg-slate-300 transition-all">
-        <Image height={30} referrerPolicy="no-referrer" width={30} src={user.photoURL} className="rounded mr-2"/>
+        <Image height={30} referrerPolicy="no-referrer" width={30} src={user.photoURL || ""} className="rounded mr-2"/>
             <span className="hidden md:block">{user.displayName} </span>
       </Dropdown.Toggle>
       <Dropdown.Menu>
         <Dropdown.Header>Account</Dropdown.Header>
-        <Dropdown.Item eventKey="1" onClick={signout}>Signout</Dropdown.Item>
+        <Dropdown.Item eventKey="1" onClick={()=>{window.location.href = '/signin?signout=true'}}>Signout</Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Header>Other</Dropdown.Header>
         <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
@@ -95,11 +95,11 @@ function Logo({className}){
   return <div><b className={f.className+' '+className}> &lt;Bootcamp/&gt;</b></div>
 }
 
-function NavBar(){
+function NavBar({title}){
 return(
       <Navbar expand="lg" bg="light" className='!justify-between border-b-4 p-2 shadow-lg' variant="light">
         <Navbar.Brand className={`ml-5 ${f.className}`}>
-          <b>&lt;Bootcamp/&gt;</b>
+          <b>&lt;{(title)?title:"Bootcamp"}/&gt;</b>
         </Navbar.Brand> 
         <UserBar/>
       </Navbar> )

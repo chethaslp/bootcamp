@@ -2,6 +2,7 @@
 import { Button, Card, Col, FloatingLabel, Form, InputGroup, ListGroup, Modal, Row, Tab, Nav } from 'react-bootstrap';
 import { PiChatsDuotone, PiFoldersDuotone, PiUsersDuotone, PiUserRectangleDuotone} from 'react-icons/pi';
 import { FaSpinner, FaUsersSlash } from "react-icons/fa";
+import { ImSpinner2 } from 'react-icons/im'
 import '@livekit/components-styles';
 import { ChatItem, NavBar, ParticipantItem, ResourceItem, redirect } from '../../util';
 
@@ -14,19 +15,22 @@ import { DataPacket_Kind, Participant, RoomEvent, Track } from 'livekit-client';
 import Link from 'next/link';
 
 
-function VideoGrid({token, ss}){
+function VideoGrid({token, status}){
   const camTrack = useTracks([Track.Source.Camera], {onlySubscribed: true});
   const scrTrack = useTracks([Track.Source.ScreenShare], {onlySubscribed: true});
+  
+  if(!status) return <div className='text-white flex items-center justify-center'><ImSpinner2 className='animate-spin mr-3' size={25}/> Connecting.</div>
+  else if(status == 'r') <div className='text-white flex items-center justify-center'><ImSpinner2 className='animate-spin mr-3' size={25}/> Reconnecting.</div>
 
-  if(camTrack.length == 0) return <div className='text-white flex items-center justify-center'><PiUserRectangleDuotone size={30}/> &nbsp;Waiting for Host to join.</div>
+  if(camTrack.length == 0) return <div className='text-white flex items-center justify-center'><PiUserRectangleDuotone size={30} className={"mr-3"}/>Waiting for Host to join.</div>
 return (
-  <div className='!h-full !w-full'>
+  <div className='!h-full !w-full grid grid-flow-col'>
     {/* <div> */}
-      {(scrTrack.length != 0)?<FocusLayoutContainer className='h-full w-full grid-flow-col'>
+      {(scrTrack.length != 0)?<FocusLayoutContainer className='h-full w-full '>
       {scrTrack.map((trackReference,i) => {
         return (
           // <VideoTrack {...trackReference} key={`view-${i}`}/>
-          <FocusLayout trackRef={trackReference}/>
+          <FocusLayout trackRef={trackReference} key={`scr-${i}`}/>
         )
       })}
       </FocusLayoutContainer>:null}
@@ -34,7 +38,7 @@ return (
       {camTrack.map((trackReference,i) => {
         return (
           // <VideoTrack {...trackReference} key={`view-${i}`}/>
-          <FocusLayout trackRef={trackReference}/>
+          <FocusLayout trackRef={trackReference} key={`cam-${i}`}/>
         )
       })}
       </FocusLayoutContainer>
@@ -85,7 +89,6 @@ function ParticipantBar() {
     </>:<div className='flex justify-center'><small className='text-muted'>No Participants so far.</small></div>}
   </div>
 }
-
 function QnaDialog(){
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
@@ -151,27 +154,30 @@ function QnaDialog(){
 
 }
 function ResoursesBar(){
-  return <ListGroup>
-    <ResourceItem l_type="file" link="dccsc"></ResourceItem>
-    <ResourceItem l_type="text" link="dbytjndn"></ResourceItem>
-    <ResourceItem l_type="site" link="dbytjndn"></ResourceItem>
+  const room = useRoomContext()
+  const [pinRes, setPinRes] = useState("")
+  const [res , setRes] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  room.on(RoomEvent.DataReceived, (payload, participant, kind, topic) => {
+    if (JSON.parse(participant.metadata)['host']){
+      if(topic == "rsc"){
+        const d = JSON.parse(decoder.decode(payload))
+        if(d[0]=="add"){
+          setRes([...res, d[1]])
+        } else if(d[0]=="pin"){
+          setPinRes(d[1])
+        }
+      }
+    }
+})
+  return (loading)?<ImSpinner2 className='animate-spin'/>:
+  (res == [])?<div className='flex items-center justify-center'>No resources Shared.</div>:
+  <ListGroup>
+    {res.map((r)=>{
+      <ResourceItem key={r[0]} l_type={r[1]} link={r[2]} className={`${(r[0]==pinRes)?"animate-pulse":""} active:animate-none`}></ResourceItem>
+    })}
   </ListGroup>
-}
-
-function ChatBar({user}){
-
-
-  return <Card className='shadow-md !h-full'>
-            <Card.Header className='flex flex-row justify-center align-middle'><span className='flex flex-row justify-center items-center'><PiChatsDuotone className="mr-2"/>Chat</span></Card.Header>
-            <Card.Body className='gap-1 overflow-auto'>
-             
-              {/* <ChatItem e={"gtr"} msg={"hi"} user={{me:true, n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}} />
-              <ChatItem e={"gtr"} msg={"<script>console.log('hi')</script> hnmghnghnghnghngngngng \n fbfdbdfbdfbdfb\ndggyy"} user={{me:true,n:"Chethas L Pramod",img:"https://lh3.googleusercontent.com/a/ACg8ocIf5k5ENLdGCUloPSGBpItIisnG9tp6rf0dedP0pIU_dUA=s331-c-no"}} /> */}
-            </Card.Body>
-            <Card.Footer className='flex'>
-             
-            </Card.Footer>
-          </Card>
 }
 
 function SideBar(){
@@ -188,7 +194,7 @@ function SideBar(){
               <Nav.Link eventKey="participants-bar" className='group/pr'>
                 <div className='flex flex-row justify-center items-center'> 
                   <PiUsersDuotone size={25}/> 
-                  <span class="group-aria-selected/pr:hidden flex relative items-center justify-center w-4 h-4 -top-2 -end-2 -ml-4 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">2</span>
+                  <span className="group-aria-selected/pr:hidden flex relative items-center justify-center w-4 h-4 -top-2 -end-2 -ml-4 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">2</span>
                   <span className='hidden group-aria-selected/pr:block ml-2'>Participants</span>
                 </div>
               </Nav.Link>
@@ -255,11 +261,20 @@ function SideBar(){
 
 }
 
-function EventHandler(){
+function EventHandler({setStatus}){
   const room = useRoomContext()
   
   room.on(RoomEvent.Disconnected,() =>{
     redirect("/")
+  })
+  room.on(RoomEvent.Connected, ()=>{
+    setStatus("c")
+  })
+  room.on(RoomEvent.Reconnecting,()=>{
+    setStatus("r.")
+  })
+  room.on(RoomEvent.Reconnected, ()=>{
+    setStatus("r")
   })
   return null
 }
@@ -269,7 +284,10 @@ export default function Home({ params }) {
   const { user } = useAuthContext()
   const roomId = params.roomId
   const path = usePathname()
-  const [token, setToken] = useState("");
+
+  const [status, setStatus] = useState()
+  const [token, setToken] = useState("")
+  const [roomData, setRoomData] = useState()
   
   if(!user) redirect("/signin?c="+path)
   
@@ -282,7 +300,7 @@ export default function Home({ params }) {
         if (resp.ok){
           const data = await resp.json();
           setToken(data.token);
-
+          setRoomData(data.room)
         }else{
           setToken("null")
         }
@@ -300,38 +318,38 @@ export default function Home({ params }) {
   <div className='flex bg flex-col h-screen w-screen items-center text-white'>
     <div className='flex flex-row items-center h-[95%] '>
       <FaUsersSlash size={30}/>
-      <span className='ml-3 border-l-2 pl-3'> This Room doesn&apos;t exist :/</span>
+      <span className='ml-3 border-l-2 pl-3 '> This Room doesn&apos;t exist :/</span>
     </div>
     <div className='h-[5%]'>
-      <Link href='/host' className='no-underline'>Go Back</Link>
+      <Link href='/host' className='no-underline text-white hover:drop-shadow-lg hover:font-semibold transition-all'>Go Back</Link>
     </div>
   
   </div>
   </>:
     <div className='flex bg flex-col h-screen w-screen'>
-      <NavBar/>
+      <NavBar title={(roomData)?roomData.name:null}/>
       <LiveKitRoom
                 video={true}
                 audio={true}
                 token={token}
                 connectOptions={{ autoSubscribe: true }}
                 serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-                style={{ height: '100%', overflow:"auto" }}
+                style={{ height: '100%' }}
       >
-        <EventHandler/>
+        <EventHandler setStatus={setStatus}/>
         <QnaDialog/>
-        <div  className='flex p-3 h-full gap-2 overflow-auto'>
+        <div  className='grid lg:grid-flow-col-dense p-3 h-full gap-2 overflow-auto'>
         {/* SIDE BAR */}
-        <div className='h-full w-1/5 md:flex hidden'>
+        <div className='flex flex-col h-full order-1 lg:-order-1'>
           <SideBar/>
         </div>
-
-        <div className='h-full pb-2 w-full md:w-4/5'>
+        
+        <div className='pb-2 h-full -order-1 lg:order-1'>
           {/* STREAM VIEW */}
             <Card className='group/view shadow-md !h-full flex flex-row justify-center !bg-slate-800'>
                   <RoomAudioRenderer/>
-                  <VideoGrid  token={token}/>
-                  <ControlBar className='z-[100] fixed !hidden !opacity-0 group-hover/view:!flex group-hover/view:!opacity-100 rounded backdrop-blur-lg brightness-75 text-white align-self-end mb-5 transition-opacity '/>
+                  <VideoGrid  token={token} status={status}/>
+                  <ControlBar className='z-[100] fixed !hidden lg:group-hover/view:!flex  rounded backdrop-blur-lg brightness-75 text-white align-self-end mb-5 transition-opacity '/>
             </Card>
         </div>
 

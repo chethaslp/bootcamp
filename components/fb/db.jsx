@@ -1,56 +1,47 @@
 
 import app from "./config";
-import {ref as sRef, uploadBytes, getStorage, getDownloadURL} from 'firebase/storage'
-import { child, get, getDatabase, ref, set, equalTo, query, orderByChild} from 'firebase/database'
-import { User } from "firebase/auth";
+import { User, Room, userConv, roomConv } from "@/components/models"
+import { ref as sRef, uploadBytes, getStorage, getDownloadURL } from 'firebase/storage'
+import { doc, getDoc, collection, setDoc, getDocs, query, where, getFirestore} from "firebase/firestore"; 
 
-const db = ref(getDatabase(app));
+const db = getFirestore(app);
 const st = getStorage(app)
 
-export function getUserRooms(user,cb){
-    
-    get(query(child(db,'rooms'), ...[orderByChild("user"),equalTo(user.uid)])).then((snapshot) => {
-        if (snapshot.exists()) {
-            let rfr = []
-            snapshot.forEach((c)=>{
-                rfr.push({...c.val(), ...{'key': c.key}})
-            })
-            cb(rfr)
-        } else {
-            console.log("No rooms")
-            cb(null)
-        }
-      }).catch((error) => {
-        console.error(error);
-      });
+const userRef = collection(db, "users");
+const roomRef = collection(db, "rooms");
+
+export async function getUserRooms(user,cb){
+
+  const querySnapshot = await getDocs(query(roomRef, where("host", "array-contains", user.uid)).withConverter(roomConv));
+  let rfr = []
+
+  querySnapshot.forEach((ss) => {
+      rfr.push(ss.data())
+  })
+
+  cb((rfr.length==0)?null:rfr)
 }
 
-export function createUserRoom(d,roomImg,cb){
+export async function createUserRoom(d,roomImg,cb){
     const key = (Math.random() + 1).toString(36).substring(7)
-    d.key=key;
 
     if(!roomImg){
-        set(child(db, `rooms/${key}`),d).then(()=>{
-          cb()
-        });
+        setDoc(doc(roomRef, key).withConverter(roomConv), new Room(key, d.name, d.desc, d.shost, d.host)).then(()=>cb())
     }else{
       uploadBytes( sRef(st, 'rooms/'+key+'.png') , roomImg).then((snapshot) => {
         getDownloadURL(snapshot.ref).then((imgURL) => { 
-          d.img=imgURL;
-          set(child(db, `rooms/${key}`),d).then(()=>{
-            cb()
+          setDoc(doc(roomRef, key).withConverter(roomConv), new Room(key, d.name, d.desc, d.shost, d.host, imgURL)).then(()=>cb())
           });
         });
-      });
     }
 }
 
 export async function createUser(u,un){
-  await set(child(db,`users/${u.uid}`),{
-    dname: un,
-    name: u.displayName,
-    email: u.email
-  })
+
+  return await setDoc(doc(userRef, u.uid).withConverter(userConv), 
+  new User(
+    u.uid, u.displayName, u.email, un
+  ))
 }
 
 export {db}
